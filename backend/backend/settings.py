@@ -76,6 +76,9 @@ S3_SECRET_KEY = env("S3_SECRET_KEY")
 S3_BUCKET_NAME = env("S3_BUCKET_NAME")
 S3_REGION = env("S3_REGION")
 
+# Allow larger file uploads (50 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,6 +89,18 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
 
 ROOT_URLCONF = 'backend.urls'
 

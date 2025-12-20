@@ -27,3 +27,10 @@ class S3Storage:
 
     def delete(self, key):
         self.client.delete_object(Bucket=self.bucket, Key=key)
+
+    def download(self, key: str) -> bytes:
+        obj = self.client.get_object(
+            Bucket=self.bucket,
+            Key=key,
+        )
+        return obj["Body"].read()
