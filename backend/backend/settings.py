@@ -52,16 +52,30 @@ INSTALLED_APPS = [
 
     "accounts",
     "common",
+    "rag",
+    "chat",
+    "assets"
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
+    # "DEFAULT_AUTHENTICATION_CLASSES": [
+    #     "rest_framework.authentication.TokenAuthentication",
+    # ],
+        "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+S3_ENDPOINT_URL = env("S3_ENDPOINT_URL")
+S3_ACCESS_KEY = env("S3_ACCESS_KEY")
+S3_SECRET_KEY = env("S3_SECRET_KEY")
+S3_BUCKET_NAME = env("S3_BUCKET_NAME")
+S3_REGION = env("S3_REGION")
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
