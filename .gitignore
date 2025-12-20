@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.env
+.env.*
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Logs
+*.log
+
+# IDEs
+.vscode/
+.idea/
+
+# Node
+node_modules/
+
+# ML artifacts
+models/
+checkpoints/
+*.pt
+*.bin
+*.onnx
