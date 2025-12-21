@@ -1,9 +1,18 @@
-from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
+from sentence_transformers import SentenceTransformer
+
 
 class EmbeddingService:
-    def __init__(self):
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._init()
+        return cls._instance
+
+    def _init(self):
         self.model = SentenceTransformer(
             "sentence-transformers/all-MiniLM-L6-v2",
             device="cuda"
@@ -25,5 +34,7 @@ class EmbeddingService:
         return list(range(start_id, start_id + len(embeddings)))
 
     def search(self, query_embedding, top_k=5):
-        distances, indices = self.index.search(query_embedding, top_k)
-        return indices[0]
+        if self.index.ntotal == 0:
+            return []
+        _, indices = self.index.search(query_embedding, top_k)
+        return indices[0].tolist()

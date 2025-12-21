@@ -6,5 +6,5 @@ urlpatterns = [
     path("api/auth/", include("accounts.urls")),
     path("api/assets/", include("assets.urls")),
     path("api-auth/", include("rest_framework.urls")),
-
+    path("api/chat/", include("chat.urls")),
 ]
