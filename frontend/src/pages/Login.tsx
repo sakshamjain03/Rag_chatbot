@@ -1,46 +1,45 @@
 import { useState } from "react";
-import { api, setAuthToken } from "../api/client";
+import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { setIsAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  async function submit(e: React.FormEvent) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await api.post("/auth/login/", {
-      email,
-      password,
-    });
-
-    const token = res.data.token;
-
-    localStorage.setItem("auth_token", token);
-    setAuthToken(token);
-    setIsAuthenticated(true);
-
-    navigate("/");
-  }
+    try {
+      const res = await loginUser(email, password);
+      login(res.token);
+      navigate("/"); // ✅ THIS WAS MISSING
+    } catch {
+      setError("Invalid credentials");
+    }
+  };
 
   return (
-    <form onSubmit={submit}>
-      <h2>Login</h2>
+    <form onSubmit={handleSubmit}>
       <input
-        placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
       />
+
       <input
-        placeholder="Password"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
       />
+
       <button type="submit">Login</button>
+      {error && <p>{error}</p>}
     </form>
   );
 }

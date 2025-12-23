@@ -27,7 +27,7 @@ export default function Chat() {
   }
 
   async function ask() {
-    const res = await api.post("/chat/", { query });
+    const res = await api.post("/", { query });
     setAnswer(res.data.answer);
   }
 
