@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
+backend/data/faiss/*
 
 # Virtual environments
 venv/

@@ -5,7 +5,10 @@ from rest_framework import status
 from .models import Asset
 from .serializers import AssetSerializer
 from .storage import S3Storage
+from rest_framework.permissions import IsAuthenticated
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 ALLOWED_EXTENSIONS = {
     "pdf": "pdf",
@@ -27,7 +30,13 @@ ALLOWED_MIME_TYPES = {
 
 class AssetUploadView(APIView):
     parser_classes = [MultiPartParser]
+    permission_classes = [IsAuthenticated]
 
+    def options(self, request, *args, **kwargs):
+        response = super().options(request, *args, **kwargs)
+        response.status_code = 200
+        return response
+    
     def post(self, request):
         file = request.FILES.get("file")
         if not file:
@@ -53,15 +62,6 @@ class AssetUploadView(APIView):
             size_bytes=file.size,
         )
 
-        try:
-            from rag.ingestion import ingest_asset
-            ingest_asset(asset)
-        except Exception as e:
-            # Log but DO NOT fail upload
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.exception("Ingestion failed for asset %s", asset.id)            
-            
         try:
             from rag.ingestion import ingest_asset
             from rag.indexing import index_asset

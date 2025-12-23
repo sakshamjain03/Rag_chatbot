@@ -5,8 +5,10 @@ service = EmbeddingService()
 
 def index_asset(asset):
     chunks = DocumentChunk.objects.filter(asset=asset)
-    texts = [c.content for c in chunks]
+    if not chunks.exists():
+        return
 
+    texts = [c.content for c in chunks]
     embeddings = service.embed_texts(texts)
     vector_ids = service.add(embeddings)
 

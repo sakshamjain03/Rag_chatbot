@@ -10,6 +10,11 @@ class DocumentChunk(models.Model):
     chunk_index = models.IntegerField()
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    modality = models.CharField(
+        max_length=10,
+        choices=[("text", "text"), ("image", "image")],
+        default="text",
+    )
 
     class Meta:
         unique_together = ("asset", "chunk_index")

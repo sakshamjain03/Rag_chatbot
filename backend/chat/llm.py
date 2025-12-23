@@ -3,7 +3,6 @@ import requests
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "llama3.1:8b"
 
-
 def generate_answer(prompt):
     response = requests.post(
         OLLAMA_URL,

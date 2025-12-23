@@ -49,13 +49,20 @@ Question:
 {query}
 """
             answer = generate_answer(prompt)
-            sources = [
-                {
+            seen = set()
+            sources = []
+
+            for e in retrieved:
+                key = (e.chunk.asset.original_name, e.chunk.content[:200])
+                if key in seen:
+                    continue
+                seen.add(key)
+
+                sources.append({
                     "asset": e.chunk.asset.original_name,
                     "snippet": e.chunk.content[:200],
-                }
-                for e in retrieved
-            ]
+                })
+
 
         ChatMessage.objects.create(
             session=session,
