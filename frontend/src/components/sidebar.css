@@ -1,0 +1,27 @@
+.sidebar {
+  width: 220px;
+  background: #111827;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  margin-bottom: 32px;
+  font-size: 20px;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  color: #e5e7eb;
+  text-align: left;
+  padding: 10px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  color: white;
+}

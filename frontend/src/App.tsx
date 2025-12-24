@@ -1,15 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Chat from "./pages/Chat";
-import { useAuth } from "./context/AuthContext";
-import type { JSX } from "react";
-
-function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { token } = useAuth();
-  if (!token) return <Navigate to="/login" replace />;
-  return children;
-}
+import Sidebar from "./components/Sidebar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import "./styles/app.css";
 
 export default function App() {
   return (
@@ -22,7 +17,12 @@ export default function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Chat />
+              <div className="app-layout">
+                <Sidebar />
+                <main className="main-content">
+                  <Chat />
+                </main>
+              </div>
             </ProtectedRoute>
           }
         />

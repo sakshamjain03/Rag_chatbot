@@ -1,37 +1,30 @@
-# import faiss
+import faiss
 import numpy as np
 from pathlib import Path
-# from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-FAISS_PATH = BASE_DIR / "data" / "faiss" / "index.bin"
-
 
 class EmbeddingService:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._init()
-        return cls._instance
-
-    def _init(self):
+    def __init__(self, user_id):
+        self.user_id = str(user_id)
         self.dim = 384
+        
+        # User-specific path
+        self.index_path = BASE_DIR / "data" / "faiss" / f"user_{self.user_id}" / "index.bin"
 
-        # Load model ONCE
         self.model = SentenceTransformer(
             "sentence-transformers/all-MiniLM-L6-v2",
-            device="cuda"
+            device="cpu"
         )
 
-        # Load or create FAISS index
-        if FAISS_PATH.exists():
-            self.index = faiss.read_index(str(FAISS_PATH))
+        if self.index_path.exists():
+            self.index = faiss.read_index(str(self.index_path))
         else:
             self.index = faiss.IndexFlatL2(self.dim)
 
-    def embed_texts(self, texts):
+    # --- CHANGED NAME HERE: from embed_texts to embed ---
+    def embed(self, texts):
         embeddings = self.model.encode(
             texts,
             normalize_embeddings=True,
@@ -44,6 +37,7 @@ class EmbeddingService:
             embeddings = embeddings.reshape(1, -1)
 
         return embeddings
+    # ----------------------------------------------------
 
     def add(self, embeddings):
         start_id = self.index.ntotal
@@ -56,8 +50,11 @@ class EmbeddingService:
             return []
 
         _, indices = self.index.search(query_embedding, top_k)
-        return indices[0].tolist()
+        
+        # Filter out invalid indices (-1)
+        valid_indices = [i for i in indices[0].tolist() if i >= 0]
+        return valid_indices
 
     def _persist(self):
-        FAISS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        faiss.write_index(self.index, str(FAISS_PATH))
+        self.index_path.parent.mkdir(parents=True, exist_ok=True)
+        faiss.write_index(self.index, str(self.index_path))

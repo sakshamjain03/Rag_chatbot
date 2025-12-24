@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import AppLayout from "../layout/AppLayout";
+import "../styles/chat.css";
 
 export default function Chat() {
   const [file, setFile] = useState<File | null>(null);
@@ -26,64 +26,60 @@ export default function Chat() {
     loadAssets();
   }
 
+  async function deleteAsset(id: string) {
+    await api.delete(`/assets/${id}/`);
+    loadAssets();
+  }
+
   async function ask() {
     const res = await api.post("/", { query });
     setAnswer(res.data.answer);
   }
 
   return (
-    <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h2 className="text-2xl font-semibold">Chat with your files</h2>
+    <div className="chat-container">
+      <div className="chat-card">
+        <h2>Chat with your files</h2>
 
-        {/* Upload */}
-        <div className="bg-white p-4 rounded shadow">
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-          />
-          <button
-            onClick={upload}
-            className="ml-2 bg-blue-600 text-white px-4 py-1 rounded"
-          >
-            Upload
-          </button>
-        </div>
-
-        {/* Assets */}
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="font-semibold mb-2">Your Assets</h3>
-          <ul className="text-sm">
-            {assets.map((a) => (
-              <li key={a.id} className="border-b py-1">
-                {a.original_name} ({a.asset_type})
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Chat */}
-        <div className="bg-white p-4 rounded shadow space-y-2">
-          <textarea
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ask a question about your files..."
-            className="w-full border p-2 rounded"
-          />
-          <button
-            onClick={ask}
-            className="bg-green-600 text-white px-4 py-1 rounded"
-          >
-            Ask
-          </button>
-
-          {answer && (
-            <div className="mt-3 p-3 bg-gray-50 border rounded">
-              {answer}
-            </div>
-          )}
+        <div className="file-row">
+          <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          <button onClick={upload}>Upload</button>
         </div>
       </div>
-    </AppLayout>
+
+      <div className="chat-card assets-box">
+        <h3>Your Assets</h3>
+
+        {assets.map((a) => (
+          <div key={a.id} className="asset-row">
+            <div>
+              <strong>{a.original_name}</strong>
+              <div className="meta">
+                {a.asset_type.toUpperCase()} · {(a.size_bytes / 1024).toFixed(1)} KB ·{" "}
+                {new Date(a.uploaded_at).toLocaleString()}
+              </div>
+            </div>
+
+            <button className="delete-btn" onClick={() => deleteAsset(a.id)}>
+              🗑
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="chat-card">
+        <textarea
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Ask a question about your files..."
+        />
+
+        <button className="ask-btn" onClick={ask}>
+          Ask
+        </button>
+
+        {answer && <div className="answer-box">{answer}</div>}
+      </div>
+    </div>
   );
 }

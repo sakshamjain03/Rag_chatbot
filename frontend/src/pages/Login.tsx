@@ -2,6 +2,7 @@ import { useState } from "react";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../styles/auth.css";
 
 export default function Login() {
   const { login } = useAuth();
@@ -13,33 +14,38 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const res = await loginUser(email, password);
       login(res.token);
-      navigate("/"); // ✅ THIS WAS MISSING
+      navigate("/");
     } catch {
       setError("Invalid credentials");
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
+    return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Login</h2>
 
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
+        <form onSubmit={handleSubmit}>
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <button type="submit">Login</button>
-      {error && <p>{error}</p>}
-    </form>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button type="submit">Login</button>
+          {error && <p className="auth-error">{error}</p>}
+        </form>
+      </div>
+    </div>
   );
 }

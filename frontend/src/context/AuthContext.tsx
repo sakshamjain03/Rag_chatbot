@@ -1,15 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { setAuthToken } from "../api/client";
 
-type AuthContextType = {
-  token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-};
+const AuthContext = createContext<any>(null);
 
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export function AuthProvider({ children }: any) {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token")
   );
@@ -18,25 +12,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthToken(token);
   }, [token]);
 
-  const login = (newToken: string) => {
-    localStorage.setItem("token", newToken);
+  function login(newToken: string) {
     setToken(newToken);
-  };
+  }
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  function logout() {
     setToken(null);
-  };
+  }
 
   return (
     <AuthContext.Provider value={{ token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be inside AuthProvider");
-  return ctx;
-};
+export function useAuth() {
+  return useContext(AuthContext);
+}

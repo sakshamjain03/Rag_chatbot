@@ -31,6 +31,4 @@ def ingest_asset(asset):
             asset=asset,
             chunk_index=idx,
             content=chunk,
-            modality=asset.asset_type,  # ← FIX
         )
-

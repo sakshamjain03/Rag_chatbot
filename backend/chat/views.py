@@ -30,38 +30,34 @@ class ChatView(APIView):
 
         retrieved = retrieve_chunks(request.user, query)
 
-        if not retrieved:
-            answer = "I could not find this information in your uploaded files."
-            sources = []
-        else:
-            context = "\n\n".join(
-                f"[{e.chunk.asset.original_name}] {e.chunk.content}"
-                for e in retrieved
-            )
+        context = "\n\n".join(
+            f"[{e.chunk.asset.original_name}] {e.chunk.content}" for e in retrieved
+        )
 
-            prompt = f"""
-{SYSTEM_PROMPT}
 
-Context:
-{context}
+        prompt = f"""
+        {SYSTEM_PROMPT}
 
-Question:
-{query}
-"""
-            answer = generate_answer(prompt)
-            seen = set()
-            sources = []
+        Context:
+        {context}
 
-            for e in retrieved:
-                key = (e.chunk.asset.original_name, e.chunk.content[:200])
-                if key in seen:
-                    continue
-                seen.add(key)
+        Question:
+        {query}
+        """
+        answer = generate_answer(prompt)
+        seen = set()
+        sources = []
 
-                sources.append({
-                    "asset": e.chunk.asset.original_name,
-                    "snippet": e.chunk.content[:200],
-                })
+        for e in retrieved:
+            key = (e.chunk.asset.original_name, e.chunk.content[:200])
+            if key in seen:
+                continue
+            seen.add(key)
+
+            sources.append({
+                "asset": e.chunk.asset.original_name,
+                "snippet": e.chunk.content[:200],
+            })
 
 
         ChatMessage.objects.create(

@@ -1,0 +1,28 @@
+# Django Framework
+Django
+djangorestframework
+django-cors-headers
+
+# Database
+psycopg2-binary
+
+# AI & LLM (Gemini)
+google-generativeai
+python-dotenv
+
+# RAG & Embeddings
+sentence-transformers
+faiss-cpu
+numpy
+
+# File Processing (Ingestion)
+pypdf
+python-docx
+pillow
+pytesseract
+
+# Storage (S3)
+boto3
+
+# Utilities
+requests

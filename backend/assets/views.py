@@ -79,14 +79,39 @@ class AssetListView(APIView):
         assets = Asset.objects.filter(user=request.user)
         return Response(AssetSerializer(assets, many=True).data)
 
-
 class AssetDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def delete(self, request, asset_id):
         asset = Asset.objects.filter(id=asset_id, user=request.user).first()
         if not asset:
             return Response(status=404)
 
+        from rag.models import DocumentChunk, ChunkEmbedding
+        from rag.embeddings import EmbeddingService
+
+        chunks = DocumentChunk.objects.filter(asset=asset)
+        ChunkEmbedding.objects.filter(chunk__in=chunks).delete()
+        chunks.delete()
+
         storage = S3Storage()
         storage.delete(asset.storage_path)
+
         asset.delete()
         return Response(status=204)
+    
+class AssetUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, asset_id):
+        asset = Asset.objects.filter(id=asset_id, user=request.user).first()
+        if not asset:
+            return Response(status=404)
+
+        name = request.data.get("original_name")
+        if name:
+            asset.original_name = name
+            asset.save()
+
+        return Response(AssetSerializer(asset).data)
+

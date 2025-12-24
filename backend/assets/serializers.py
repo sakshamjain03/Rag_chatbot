@@ -1,8 +1,15 @@
 from rest_framework import serializers
 from .models import Asset
 
+
 class AssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
-        fields = "__all__"
-        read_only_fields = ("id", "user", "storage_path", "uploaded_at")
+        fields = [
+            "id",
+            "original_name",
+            "asset_type",
+            "mime_type",
+            "size_bytes",
+            "uploaded_at",
+        ]

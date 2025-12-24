@@ -2,6 +2,7 @@ import { useState } from "react";
 import { registerUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../styles/auth.css";
 
 export default function Register() {
   const { login } = useAuth();
@@ -24,22 +25,29 @@ export default function Register() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
+    <div className="auth-page">
+      <div className="auth-card">
+        <h2>Create Account</h2>
 
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
+        <form onSubmit={handleSubmit}>
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <button type="submit">Register</button>
-      {error && <p>{error}</p>}
-    </form>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button type="submit">Register</button>
+
+          {error && <p className="auth-error">{error}</p>}
+        </form>
+      </div>
+    </div>
   );
 }
